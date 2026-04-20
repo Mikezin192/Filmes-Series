@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Minha Lista de Filmes e Séries</title>
+  <style>
+    :root {
+      --primary: #e50914;
+      --dark: #141414;
+      --gray: #303030;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: system-ui, sans-serif;
+      background: var(--dark);
+      color: #fff;
+      padding-bottom: 80px;
+    }
+    .header {
+      background: #1f1f1f;
+      padding: 15px 20px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid #333;
+    }
+    h1 { color: var(--primary); font-size: 1.6rem; }
+
+    .container { max-width: 1100px; margin: 0 auto; padding: 15px; }
+
+    .add-form {
+      background: var(--gray);
+      padding: 20px;
+      border-radius: 16px;
+      margin-bottom: 25px;
+      position: relative;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+
+    #titleInput {
+      width: 100%;
+      padding: 16px 18px;
+      background: #222;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.1rem;
+    }
+
+    .suggestions {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: #222;
+      border-radius: 12px;
+      margin-top: 8px;
+      max-height: 340px;
+      overflow-y: auto;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+      z-index: 200;
+      display: none;
+    }
+
+    .suggestion-item {
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      border-bottom: 1px solid #333;
+    }
+    .suggestion-item:last-child { border-bottom: none; }
+    .suggestion-item:hover { background: var(--primary); }
+
+    .suggestion-poster {
+      width: 50px;
+      height: 70px;
+      object-fit: cover;
+      border-radius: 6px;
+    }
+
+    .suggestion-info { flex: 1; }
+    .suggestion-title { font-weight: bold; }
+    .suggestion-year { font-size: 0.9rem; color: #aaa; }
+
+    .add-form button {
+      width: 100%;
+      margin-top: 12px;
+      padding: 16px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: bold;
+    }
+
+    .tabs {
+      display: flex;
+      background: #222;
+      border-radius: 12px;
+      padding: 6px;
+      margin-bottom: 25px;
+    }
+    .tab {
+      flex: 1;
+      padding: 14px;
+      text-align: center;
+      font-weight: bold;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    .tab.active {
+      background: var(--primary);
+      color: white;
+    }
+
+    .lists { display: flex; flex-direction: column; gap: 25px; }
+    .list {
+      background: var(--gray);
+      border-radius: 16px;
+      padding: 18px 15px;
+    }
+    .list h2 {
+      margin-bottom: 18px;
+      color: var(--primary);
+      text-align: center;
+      font-size: 1.3rem;
+    }
+
+    .item {
+      background: #222;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .poster-img {
+      width: 78px;
+      height: 110px;
+      object-fit: cover;
+      border-radius: 10px;
+      flex-shrink: 0;
+    }
+    .poster-placeholder {
+      width: 78px;
+      height: 110px;
+      background: linear-gradient(135deg, #e50914, #222);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      flex-shrink: 0;
+    }
+    .item-info { flex: 1; }
+    .item-title { font-weight: bold; font-size: 1.1rem; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .item-type { font-size: 0.95rem; color: #aaa; }
+    .item-season { font-size: 0.9rem; color: #00c853; margin-top: 4px; }
+
+    .actions { display: flex; flex-direction: column; gap: 8px; }
+    .actions button {
+      padding: 10px 14px;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      cursor: pointer;
+    }
+    .watched-btn { background: #00c853; }
+    .delete-btn { background: #d32f2f; }
+
+    .empty { text-align: center; color: #777; padding: 50px 20px; font-style: italic; }
+
+    @media (min-width: 768px) {
+      .lists { flex-direction: row; }
+      .list { flex: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🎬 Minha Lista</h1>
+  </div>
+
+  <div class="container">
+    <div class="add-form">
+      <input type="text" id="titleInput" placeholder="Digite o nome do filme ou série..." autocomplete="off">
+      <div class="suggestions" id="suggestions"></div>
+      <button onclick="addManual()">Adicionar manualmente (sem sugestão)</button>
+    </div>
+
+    <div class="tabs">
+      <div class="tab active" onclick="showTab(0)" id="tab0">📅 Pretendo Assistir</div>
+      <div class="tab" onclick="showTab(1)" id="tab1">✅ Já Assisti</div>
+    </div>
+
+    <div class="lists">
+      <div class="list" id="to-watch-list">
+        <h2>📅 Pretendo Assistir</h2>
+        <div id="to-watch-items"></div>
+      </div>
+      <div class="list" id="watched-list">
+        <h2>✅ Já Assisti</h2>
+        <div id="watched-items"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let items = JSON.parse(localStorage.getItem('myMovies')) || [];
+    
+    // === COLOQUE SUA CHAVE AQUI ===
+    const OMDB_API_KEY = "37974d6";   // ← Troque por sua chave real
+
+    const input = document.getElementById('titleInput');
+    const suggestionsBox = document.getElementById('suggestions');
+    let timeout = null;
+
+    input.addEventListener('input', () => {
+      clearTimeout(timeout);
+      const query = input.value.trim();
+      if (query.length < 2) {
+        suggestionsBox.style.display = 'none';
+        return;
+      }
+      timeout = setTimeout(() => searchOMDBSuggestions(query), 400);
+    });
+
+    async function searchOMDBSuggestions(query) {
+      if (!OMDB_API_KEY || OMDB_API_KEY === "SUA_CHAVE_AQUI") {
+        suggestionsBox.innerHTML = '<div style="padding:15px;color:#ff6b6b;">⚠️ Coloque sua chave OMDb no código!</div>';
+        suggestionsBox.style.display = 'block';
+        return;
+      }
+
+      try {
+        const res = await fetch(`https://www.omdbapi.com/?s=${encodeURIComponent(query)}&apikey=${OMDB_API_KEY}`);
+        const data = await res.json();
+
+        suggestionsBox.innerHTML = '';
+        suggestionsBox.style.display = 'block';
+
+        if (data.Response === "False" || !data.Search) {
+          suggestionsBox.innerHTML = '<div style="padding:15px;color:#aaa;">Nenhum resultado encontrado</div>';
+          return;
+        }
+
+        data.Search.slice(0, 8).forEach(item => {
+          const poster = item.Poster !== "N/A" ? item.Poster : null;
+          const div = document.createElement('div');
+          div.className = 'suggestion-item';
+          div.innerHTML = `
+            ${poster ? `<img src="${poster}" class="suggestion-poster">` : `<div style="width:50px;height:70px;background:#333;border-radius:6px;"></div>`}
+            <div class="suggestion-info">
+              <div class="suggestion-title">${item.Title}</div>
+              <div class="suggestion-year">${item.Year} • ${item.Type === 'series' ? 'Série' : 'Filme'}</div>
+            </div>
+          `;
+          div.onclick = () => selectSuggestion(item);
+          suggestionsBox.appendChild(div);
+        });
+      } catch (e) {
+        suggestionsBox.style.display = 'none';
+      }
+    }
+
+    async function selectSuggestion(item) {
+      const type = item.Type === 'series' ? "Série" : "Filme";
+      const poster = item.Poster !== "N/A" ? item.Poster : null;
+
+      let season = null;
+      if (type === "Série") {
+        const seasonInput = prompt(`Qual temporada de "${item.Title}"? (número ou deixe vazio)`, "1");
+        if (seasonInput && seasonInput.trim() !== "") {
+          season = parseInt(seasonInput);
+        }
+      }
+
+      items.push({
+        id: Date.now(),
+        title: item.Title,
+        type: type,
+        status: "to-watch",
+        poster: poster,
+        season: season,
+        year: item.Year
+      });
+
+      saveToLocalStorage();
+      renderLists();
+      input.value = '';
+      suggestionsBox.style.display = 'none';
+    }
+
+    function addManual() {
+      let name = input.value.trim();
+      if (!name) return alert("Digite um nome primeiro!");
+      alert("🔎 Use as sugestões que aparecem enquanto você digita.\nElas trazem filme/série, ano e poster automaticamente.");
+    }
+
+    function saveToLocalStorage() {
+      localStorage.setItem('myMovies', JSON.stringify(items));
+    }
+
+    function deleteItem(id) {
+      if (confirm("Excluir este título?")) {
+        items = items.filter(i => i.id !== id);
+        saveToLocalStorage();
+        renderLists();
+      }
+    }
+
+    function toggleStatus(id) {
+      items = items.map(item => {
+        if (item.id === id) {
+          item.status = item.status === 'watched' ? 'to-watch' : 'watched';
+        }
+        return item;
+      });
+      saveToLocalStorage();
+      renderLists();
+    }
+
+    function renderLists() {
+      const toWatchContainer = document.getElementById('to-watch-items');
+      const watchedContainer = document.getElementById('watched-items');
+
+      toWatchContainer.innerHTML = '';
+      watchedContainer.innerHTML = '';
+
+      const toWatch = items.filter(item => item.status === 'to-watch');
+      const watched = items.filter(item => item.status === 'watched');
+
+      function createItemHTML(item) {
+        const posterHTML = item.poster 
+          ? `<img src="${item.poster}" class="poster-img" alt="poster">`
+          : `<div class="poster-placeholder">🎬</div>`;
+
+        const seasonText = item.season ? `<div class="item-season">Temporada ${item.season}</div>` : '';
+        const yearText = item.year ? ` (${item.year})` : '';
+
+        return `
+          <div class="item">
+            ${posterHTML}
+            <div class="item-info">
+              <div class="item-title">${item.title}</div>
+              <div class="item-type">${item.type}${yearText}</div>
+              ${seasonText}
+            </div>
+            <div class="actions">
+              <button onclick="toggleStatus(${item.id})" class="${item.status === 'to-watch' ? 'watched-btn' : ''}">
+                ${item.status === 'to-watch' ? '✅ Já assisti' : '📅 Voltar'}
+              </button>
+              <button class="delete-btn" onclick="deleteItem(${item.id})">🗑 Excluir</button>
+            </div>
+          </div>
+        `;
+      }
+
+      if (toWatch.length === 0) {
+        toWatchContainer.innerHTML = '<div class="empty">Nada para assistir ainda... Adicione acima!</div>';
+      } else {
+        toWatch.forEach(item => toWatchContainer.innerHTML += createItemHTML(item));
+      }
+
+      if (watched.length === 0) {
+        watchedContainer.innerHTML = '<div class="empty">Nada assistido ainda...</div>';
+      } else {
+        watched.forEach(item => watchedContainer.innerHTML += createItemHTML(item));
+      }
+    }
+
+    function showTab(tab) {
+      document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', i === tab));
+    }
+
+    // Fechar sugestões ao clicar fora
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.add-form')) {
+        suggestionsBox.style.display = 'none';
+      }
+    });
+
+    // Inicializa
+    renderLists();
+  </script>
+</body>
+</html>
