@@ -191,7 +191,7 @@
     <div class="add-form">
       <input type="text" id="titleInput" placeholder="Digite o nome do filme ou série..." autocomplete="off">
       <div class="suggestions" id="suggestions"></div>
-      <button onclick="addManual()">Adicionar manualmente (sem sugestão)</button>
+      <button onclick="addManual()">Adicionar manualmente</button>
     </div>
 
     <div class="tabs">
@@ -214,8 +214,8 @@
   <script>
     let items = JSON.parse(localStorage.getItem('myMovies')) || [];
     
-    // === COLOQUE SUA CHAVE AQUI ===
-    const OMDB_API_KEY = "37974d6";   // ← Troque por sua chave real
+    // Sua chave da OMDb
+    const OMDB_API_KEY = "37974d6";
 
     const input = document.getElementById('titleInput');
     const suggestionsBox = document.getElementById('suggestions');
@@ -232,12 +232,6 @@
     });
 
     async function searchOMDBSuggestions(query) {
-      if (!OMDB_API_KEY || OMDB_API_KEY === "SUA_CHAVE_AQUI") {
-        suggestionsBox.innerHTML = '<div style="padding:15px;color:#ff6b6b;">⚠️ Coloque sua chave OMDb no código!</div>';
-        suggestionsBox.style.display = 'block';
-        return;
-      }
-
       try {
         const res = await fetch(`https://www.omdbapi.com/?s=${encodeURIComponent(query)}&apikey=${OMDB_API_KEY}`);
         const data = await res.json();
@@ -265,7 +259,8 @@
           suggestionsBox.appendChild(div);
         });
       } catch (e) {
-        suggestionsBox.style.display = 'none';
+        suggestionsBox.innerHTML = '<div style="padding:15px;color:#ff6b6b;">Erro na conexão com a API</div>';
+        suggestionsBox.style.display = 'block';
       }
     }
 
@@ -300,7 +295,7 @@
     function addManual() {
       let name = input.value.trim();
       if (!name) return alert("Digite um nome primeiro!");
-      alert("🔎 Use as sugestões que aparecem enquanto você digita.\nElas trazem filme/série, ano e poster automaticamente.");
+      alert("Use as sugestões que aparecem enquanto digita para ter poster e tipo automático.");
     }
 
     function saveToLocalStorage() {
@@ -379,7 +374,6 @@
       document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', i === tab));
     }
 
-    // Fechar sugestões ao clicar fora
     document.addEventListener('click', (e) => {
       if (!e.target.closest('.add-form')) {
         suggestionsBox.style.display = 'none';
