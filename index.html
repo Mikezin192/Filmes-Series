@@ -12,41 +12,41 @@
     }
     * { margin:0; padding:0; box-sizing:border-box; }
     body {
-      font-family: system-ui, sans-serif;
+      font-family: system-ui, -apple-system, sans-serif;
       background: var(--dark);
       color: #fff;
       padding-bottom: 80px;
     }
     .header {
       background: #1f1f1f;
-      padding: 15px 20px;
+      padding: 18px 20px;
       text-align: center;
       position: sticky;
       top: 0;
       z-index: 100;
       border-bottom: 1px solid #333;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
     }
-    h1 { color: var(--primary); font-size: 1.6rem; }
+    h1 { color: var(--primary); font-size: 1.7rem; }
 
     .container { max-width: 1100px; margin: 0 auto; padding: 15px; }
 
     .add-form {
       background: var(--gray);
-      padding: 20px;
-      border-radius: 16px;
-      margin-bottom: 25px;
-      position: relative;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      padding: 22px;
+      border-radius: 18px;
+      margin-bottom: 28px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.4);
     }
 
     #titleInput {
       width: 100%;
-      padding: 16px 18px;
+      padding: 18px;
       background: #222;
       color: #fff;
       border: none;
-      border-radius: 12px;
-      font-size: 1.1rem;
+      border-radius: 14px;
+      font-size: 1.15rem;
     }
 
     .suggestions {
@@ -55,11 +55,11 @@
       left: 0;
       right: 0;
       background: #222;
-      border-radius: 12px;
+      border-radius: 14px;
       margin-top: 8px;
-      max-height: 340px;
+      max-height: 380px;
       overflow-y: auto;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
       z-index: 200;
       display: none;
     }
@@ -68,132 +68,159 @@
       padding: 14px 18px;
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 14px;
       cursor: pointer;
       border-bottom: 1px solid #333;
+      transition: 0.2s;
     }
-    .suggestion-item:last-child { border-bottom: none; }
-    .suggestion-item:hover { background: var(--primary); }
+    .suggestion-item:hover { background: var(--primary); transform: scale(1.02); }
 
     .suggestion-poster {
-      width: 50px;
-      height: 70px;
+      width: 55px;
+      height: 78px;
       object-fit: cover;
-      border-radius: 6px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
     }
 
     .suggestion-info { flex: 1; }
-    .suggestion-title { font-weight: bold; }
-    .suggestion-year { font-size: 0.9rem; color: #aaa; }
+    .suggestion-title { font-weight: bold; font-size: 1.05rem; }
+    .suggestion-year { font-size: 0.9rem; color: #bbb; }
 
     .season-selector {
-      margin-top: 15px;
-      padding: 15px;
-      background: #222;
-      border-radius: 12px;
-      display: none;
+      margin-top: 18px;
+      padding: 20px;
+      background: #1f1f1f;
+      border-radius: 16px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+      animation: fadeIn 0.3s;
     }
 
-    .season-selector select, .season-selector button {
+    .season-selector p {
+      font-weight: bold;
+      margin-bottom: 12px;
+      font-size: 1.1rem;
+    }
+
+    .season-selector select {
       width: 100%;
-      padding: 14px;
-      margin: 8px 0;
-      border-radius: 10px;
+      padding: 16px;
       background: #333;
       color: white;
       border: none;
-      font-size: 1rem;
+      border-radius: 12px;
+      font-size: 1.05rem;
+      margin-bottom: 12px;
+    }
+
+    .season-selector button {
+      width: 100%;
+      padding: 16px;
+      margin: 6px 0;
+      border-radius: 12px;
+      font-weight: bold;
+      font-size: 1.05rem;
     }
 
     .add-form button {
       width: 100%;
-      margin-top: 12px;
-      padding: 16px;
+      padding: 17px;
       background: var(--primary);
       color: white;
       border: none;
-      border-radius: 12px;
-      font-size: 1.1rem;
+      border-radius: 14px;
+      font-size: 1.15rem;
       font-weight: bold;
+      margin-top: 12px;
     }
 
     .tabs {
       display: flex;
       background: #222;
-      border-radius: 12px;
+      border-radius: 14px;
       padding: 6px;
-      margin-bottom: 25px;
+      margin-bottom: 28px;
     }
     .tab {
       flex: 1;
-      padding: 14px;
+      padding: 16px;
       text-align: center;
       font-weight: bold;
-      border-radius: 10px;
+      border-radius: 12px;
       cursor: pointer;
+      transition: 0.3s;
     }
     .tab.active {
       background: var(--primary);
       color: white;
+      box-shadow: 0 4px 15px rgba(229,9,20,0.4);
     }
 
-    .lists { display: flex; flex-direction: column; gap: 25px; }
+    .lists { display: flex; flex-direction: column; gap: 28px; }
     .list {
       background: var(--gray);
-      border-radius: 16px;
-      padding: 18px 15px;
+      border-radius: 18px;
+      padding: 20px 18px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.4);
     }
     .list h2 {
-      margin-bottom: 18px;
+      margin-bottom: 20px;
       color: var(--primary);
       text-align: center;
-      font-size: 1.3rem;
+      font-size: 1.35rem;
     }
 
     .item {
       background: #222;
-      padding: 12px;
-      margin: 10px 0;
-      border-radius: 14px;
+      padding: 14px;
+      margin: 12px 0;
+      border-radius: 16px;
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 16px;
+      transition: 0.2s;
     }
+    .item:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.5); }
+
     .poster-img {
-      width: 78px;
-      height: 110px;
+      width: 85px;
+      height: 120px;
       object-fit: cover;
-      border-radius: 10px;
+      border-radius: 12px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.6);
       flex-shrink: 0;
     }
     .poster-placeholder {
-      width: 78px;
-      height: 110px;
+      width: 85px;
+      height: 120px;
       background: linear-gradient(135deg, #e50914, #222);
-      border-radius: 10px;
+      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 36px;
+      font-size: 42px;
       flex-shrink: 0;
     }
+
     .item-info { flex: 1; }
-    .item-title { font-weight: bold; font-size: 1.1rem; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .item-title { font-weight: bold; font-size: 1.15rem; margin-bottom: 6px; }
     .item-type { font-size: 0.95rem; color: #aaa; }
-    .item-season { font-size: 0.9rem; color: #00c853; margin-top: 4px; }
+    .item-season { font-size: 0.95rem; color: #00c853; margin-top: 6px; font-weight: bold; }
 
     .actions { display: flex; flex-direction: column; gap: 8px; }
     .actions button {
-      padding: 10px 14px;
+      padding: 12px 16px;
       border: none;
-      border-radius: 10px;
+      border-radius: 12px;
       font-size: 0.95rem;
       cursor: pointer;
     }
     .watched-btn { background: #00c853; }
     .delete-btn { background: #d32f2f; }
 
-    .empty { text-align: center; color: #777; padding: 50px 20px; font-style: italic; }
+    .empty { text-align: center; color: #777; padding: 60px 20px; font-style: italic; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
     @media (min-width: 768px) {
       .lists { flex-direction: row; }
@@ -211,15 +238,14 @@
       <input type="text" id="titleInput" placeholder="Digite o nome do filme ou série..." autocomplete="off">
       <div class="suggestions" id="suggestions"></div>
 
-      <!-- Seletor de temporada (aparece só para séries) -->
-      <div class="season-selector" id="seasonSelector">
-        <p id="seasonTitle" style="margin-bottom:10px; font-weight:bold;"></p>
+      <div class="season-selector" id="seasonSelector" style="display:none;">
+        <p id="seasonTitle"></p>
         <select id="seasonSelect"></select>
         <button onclick="confirmSeason()">✅ Adicionar com esta temporada</button>
-        <button onclick="cancelSeason()" style="background:#666;">Cancelar</button>
+        <button onclick="cancelSeason()" style="background:#555;">Cancelar</button>
       </div>
 
-      <button onclick="addManual()" style="margin-top:10px;">Adicionar manualmente</button>
+      <button onclick="addManual()">Adicionar manualmente</button>
     </div>
 
     <div class="tabs">
@@ -241,8 +267,7 @@
 
   <script>
     let items = JSON.parse(localStorage.getItem('myMovies')) || [];
-    let currentSuggestion = null;   // guarda a série selecionada temporariamente
-
+    let currentSuggestion = null;
     const OMDB_API_KEY = "37974d6";
 
     const input = document.getElementById('titleInput');
@@ -272,7 +297,7 @@
         suggestionsBox.style.display = 'block';
 
         if (data.Response === "False" || !data.Search) {
-          suggestionsBox.innerHTML = '<div style="padding:15px;color:#aaa;">Nenhum resultado encontrado</div>';
+          suggestionsBox.innerHTML = '<div style="padding:20px;color:#aaa;text-align:center;">Nenhum resultado encontrado</div>';
           return;
         }
 
@@ -281,7 +306,7 @@
           const div = document.createElement('div');
           div.className = 'suggestion-item';
           div.innerHTML = `
-            ${poster ? `<img src="${poster}" class="suggestion-poster">` : `<div style="width:50px;height:70px;background:#333;border-radius:6px;"></div>`}
+            ${poster ? `<img src="${poster}" class="suggestion-poster">` : `<div style="width:55px;height:78px;background:#333;border-radius:8px;"></div>`}
             <div class="suggestion-info">
               <div class="suggestion-title">${item.Title}</div>
               <div class="suggestion-year">${item.Year} • ${item.Type === 'series' ? 'Série' : 'Filme'}</div>
@@ -291,8 +316,7 @@
           suggestionsBox.appendChild(div);
         });
       } catch (e) {
-        suggestionsBox.innerHTML = '<div style="padding:15px;color:#ff6b6b;">Erro na conexão</div>';
-        suggestionsBox.style.display = 'block';
+        suggestionsBox.style.display = 'none';
       }
     }
 
@@ -301,28 +325,35 @@
       currentSuggestion = item;
 
       if (item.Type === 'series') {
-        // Mostra seletor de temporada
         seasonTitle.textContent = `Qual temporada de "${item.Title}"?`;
         seasonSelect.innerHTML = '';
-
-        // Opções de 1 a 20 (comum para séries)
-        for (let i = 1; i <= 20; i++) {
-          const option = document.createElement('option');
-          option.value = i;
-          option.textContent = `Temporada ${i}`;
-          seasonSelect.appendChild(option);
+        for (let i = 1; i <= 25; i++) {
+          const opt = document.createElement('option');
+          opt.value = i;
+          opt.textContent = `Temporada ${i}`;
+          seasonSelect.appendChild(opt);
         }
-
         seasonSelector.style.display = 'block';
       } else {
-        // É filme → adiciona direto
         addItemToList(item, null);
       }
     }
 
-    function confirmSeason() {
-      const selectedSeason = parseInt(seasonSelect.value);
-      addItemToList(currentSuggestion, selectedSeason);
+    async function confirmSeason() {
+      const season = parseInt(seasonSelect.value);
+      const item = currentSuggestion;
+
+      // Busca o poster específico da temporada
+      let seasonPoster = item.Poster !== "N/A" ? item.Poster : null;
+      try {
+        const res = await fetch(`https://www.omdbapi.com/?t=${encodeURIComponent(item.Title)}&season=${season}&apikey=${OMDB_API_KEY}`);
+        const data = await res.json();
+        if (data.Poster && data.Poster !== "N/A") {
+          seasonPoster = data.Poster;   // poster da temporada (se existir)
+        }
+      } catch (e) {}
+
+      addItemToList(item, season, seasonPoster);
       cancelSeason();
     }
 
@@ -331,16 +362,16 @@
       currentSuggestion = null;
     }
 
-    function addItemToList(item, season = null) {
+    function addItemToList(item, season = null, poster = null) {
       const type = item.Type === 'series' ? "Série" : "Filme";
-      const poster = item.Poster !== "N/A" ? item.Poster : null;
+      const finalPoster = poster || (item.Poster !== "N/A" ? item.Poster : null);
 
       items.push({
         id: Date.now(),
         title: item.Title,
         type: type,
         status: "to-watch",
-        poster: poster,
+        poster: finalPoster,
         season: season,
         year: item.Year
       });
@@ -353,7 +384,7 @@
     function addManual() {
       let name = input.value.trim();
       if (!name) return alert("Digite um nome primeiro!");
-      alert("Use as sugestões que aparecem enquanto você digita para ter poster automático.");
+      alert("Use as sugestões que aparecem para ter poster e tipo automático.");
     }
 
     function saveToLocalStorage() {
@@ -425,9 +456,7 @@
     }
 
     document.addEventListener('click', (e) => {
-      if (!e.target.closest('.add-form')) {
-        suggestionsBox.style.display = 'none';
-      }
+      if (!e.target.closest('.add-form')) suggestionsBox.style.display = 'none';
     });
 
     renderLists();
