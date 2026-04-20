@@ -86,6 +86,25 @@
     .suggestion-title { font-weight: bold; }
     .suggestion-year { font-size: 0.9rem; color: #aaa; }
 
+    .season-selector {
+      margin-top: 15px;
+      padding: 15px;
+      background: #222;
+      border-radius: 12px;
+      display: none;
+    }
+
+    .season-selector select, .season-selector button {
+      width: 100%;
+      padding: 14px;
+      margin: 8px 0;
+      border-radius: 10px;
+      background: #333;
+      color: white;
+      border: none;
+      font-size: 1rem;
+    }
+
     .add-form button {
       width: 100%;
       margin-top: 12px;
@@ -191,7 +210,16 @@
     <div class="add-form">
       <input type="text" id="titleInput" placeholder="Digite o nome do filme ou série..." autocomplete="off">
       <div class="suggestions" id="suggestions"></div>
-      <button onclick="addManual()">Adicionar manualmente</button>
+
+      <!-- Seletor de temporada (aparece só para séries) -->
+      <div class="season-selector" id="seasonSelector">
+        <p id="seasonTitle" style="margin-bottom:10px; font-weight:bold;"></p>
+        <select id="seasonSelect"></select>
+        <button onclick="confirmSeason()">✅ Adicionar com esta temporada</button>
+        <button onclick="cancelSeason()" style="background:#666;">Cancelar</button>
+      </div>
+
+      <button onclick="addManual()" style="margin-top:10px;">Adicionar manualmente</button>
     </div>
 
     <div class="tabs">
@@ -213,12 +241,16 @@
 
   <script>
     let items = JSON.parse(localStorage.getItem('myMovies')) || [];
-    
-    // Sua chave da OMDb
+    let currentSuggestion = null;   // guarda a série selecionada temporariamente
+
     const OMDB_API_KEY = "37974d6";
 
     const input = document.getElementById('titleInput');
     const suggestionsBox = document.getElementById('suggestions');
+    const seasonSelector = document.getElementById('seasonSelector');
+    const seasonTitle = document.getElementById('seasonTitle');
+    const seasonSelect = document.getElementById('seasonSelect');
+
     let timeout = null;
 
     input.addEventListener('input', () => {
@@ -259,22 +291,49 @@
           suggestionsBox.appendChild(div);
         });
       } catch (e) {
-        suggestionsBox.innerHTML = '<div style="padding:15px;color:#ff6b6b;">Erro na conexão com a API</div>';
+        suggestionsBox.innerHTML = '<div style="padding:15px;color:#ff6b6b;">Erro na conexão</div>';
         suggestionsBox.style.display = 'block';
       }
     }
 
-    async function selectSuggestion(item) {
+    function selectSuggestion(item) {
+      suggestionsBox.style.display = 'none';
+      currentSuggestion = item;
+
+      if (item.Type === 'series') {
+        // Mostra seletor de temporada
+        seasonTitle.textContent = `Qual temporada de "${item.Title}"?`;
+        seasonSelect.innerHTML = '';
+
+        // Opções de 1 a 20 (comum para séries)
+        for (let i = 1; i <= 20; i++) {
+          const option = document.createElement('option');
+          option.value = i;
+          option.textContent = `Temporada ${i}`;
+          seasonSelect.appendChild(option);
+        }
+
+        seasonSelector.style.display = 'block';
+      } else {
+        // É filme → adiciona direto
+        addItemToList(item, null);
+      }
+    }
+
+    function confirmSeason() {
+      const selectedSeason = parseInt(seasonSelect.value);
+      addItemToList(currentSuggestion, selectedSeason);
+      cancelSeason();
+    }
+
+    function cancelSeason() {
+      seasonSelector.style.display = 'none';
+      currentSuggestion = null;
+    }
+
+    function addItemToList(item, season = null) {
       const type = item.Type === 'series' ? "Série" : "Filme";
       const poster = item.Poster !== "N/A" ? item.Poster : null;
-
-      let season = null;
-      if (type === "Série") {
-        const seasonInput = prompt(`Qual temporada de "${item.Title}"? (número ou deixe vazio)`, "1");
-        if (seasonInput && seasonInput.trim() !== "") {
-          season = parseInt(seasonInput);
-        }
-      }
 
       items.push({
         id: Date.now(),
@@ -289,13 +348,12 @@
       saveToLocalStorage();
       renderLists();
       input.value = '';
-      suggestionsBox.style.display = 'none';
     }
 
     function addManual() {
       let name = input.value.trim();
       if (!name) return alert("Digite um nome primeiro!");
-      alert("Use as sugestões que aparecem enquanto digita para ter poster e tipo automático.");
+      alert("Use as sugestões que aparecem enquanto você digita para ter poster automático.");
     }
 
     function saveToLocalStorage() {
@@ -312,9 +370,7 @@
 
     function toggleStatus(id) {
       items = items.map(item => {
-        if (item.id === id) {
-          item.status = item.status === 'watched' ? 'to-watch' : 'watched';
-        }
+        if (item.id === id) item.status = item.status === 'watched' ? 'to-watch' : 'watched';
         return item;
       });
       saveToLocalStorage();
@@ -357,17 +413,11 @@
         `;
       }
 
-      if (toWatch.length === 0) {
-        toWatchContainer.innerHTML = '<div class="empty">Nada para assistir ainda... Adicione acima!</div>';
-      } else {
-        toWatch.forEach(item => toWatchContainer.innerHTML += createItemHTML(item));
-      }
+      if (toWatch.length === 0) toWatchContainer.innerHTML = '<div class="empty">Nada para assistir ainda... Adicione acima!</div>';
+      else toWatch.forEach(item => toWatchContainer.innerHTML += createItemHTML(item));
 
-      if (watched.length === 0) {
-        watchedContainer.innerHTML = '<div class="empty">Nada assistido ainda...</div>';
-      } else {
-        watched.forEach(item => watchedContainer.innerHTML += createItemHTML(item));
-      }
+      if (watched.length === 0) watchedContainer.innerHTML = '<div class="empty">Nada assistido ainda...</div>';
+      else watched.forEach(item => watchedContainer.innerHTML += createItemHTML(item));
     }
 
     function showTab(tab) {
@@ -380,7 +430,6 @@
       }
     });
 
-    // Inicializa
     renderLists();
   </script>
 </body>
